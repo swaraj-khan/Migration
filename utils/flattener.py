@@ -1,0 +1,17 @@
+from typing import Any, Dict
+
+
+def flatten_document(doc: Dict[str, Any], parent_key: str = "", sep: str = "_") -> Dict[str, Any]:
+    items: Dict[str, Any] = {}
+    for key, value in doc.items():
+        if key == "_id":
+            continue
+
+        new_key = f"{parent_key}{sep}{key}" if parent_key else key
+
+        if isinstance(value, dict):
+            items.update(flatten_document(value, new_key, sep))
+        else:
+            items[new_key] = value
+
+    return items
