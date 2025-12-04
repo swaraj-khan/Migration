@@ -1,17 +1,32 @@
-from typing import Any, Dict
+import hashlib
+
+MAX_KEY_LEN = 50
+
+def shorten(key: str) -> str:
+    if len(key) <= MAX_KEY_LEN:
+        return key
+    hash_suffix = hashlib.md5(key.encode()).hexdigest()[:6]
+    return key[:MAX_KEY_LEN] + "_" + hash_suffix
 
 
-def flatten_document(doc: Dict[str, Any], parent_key: str = "", sep: str = "_") -> Dict[str, Any]:
-    items: Dict[str, Any] = {}
-    for key, value in doc.items():
-        if key == "_id":
-            continue
+def flatten_document(obj, parent_key="", result=None):
+    if result is None:
+        result = {}
 
-        new_key = f"{parent_key}{sep}{key}" if parent_key else key
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            new_key = f"{parent_key}_{k}" if parent_key else k
+            new_key = shorten(new_key)
+            flatten_document(v, new_key, result)
 
-        if isinstance(value, dict):
-            items.update(flatten_document(value, new_key, sep))
-        else:
-            items[new_key] = value
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            new_key = f"{parent_key}_{i}"
+            new_key = shorten(new_key)
+            flatten_document(item, new_key, result)
 
-    return items
+    else:
+        key = shorten(parent_key)
+        result[key] = obj
+
+    return result
