@@ -29,7 +29,7 @@ For businesses, this means smoother data flows between systems without downtime 
 1. Grab the project files.
 2. Install the needed packages:
    ```
-   pip install pymongo python-dotenv psycopg2-binary
+   pip install -r requirements.txt
    ```
 
 ## Configuration
